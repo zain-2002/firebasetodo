@@ -22,10 +22,65 @@
   }
   body{
     height: 100vh;
-    background-color: var(--body-BG-color);
+    background-color: var(--body-BG-color) !important;
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  #bodycont{
+margin-top: 40px;
+  }
+  #logoutbtn{
+    border: none;
+    background-color: transparent;
+    width: 100px;
+  }
+  .chipbtn{
+      background-color: transparent; border: none;
+ 
+  }
+  .submittodo{
+    margin-top: 20px;
+  }
+  #filtereddiv{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .dbdatatodosbtn{
+    background-color: rgb(23, 107, 251); border: none;color: white;padding: 6px;border-radius: 4px;
+  }
+  input[type="checkbox"][disabled] {
+    opacity: 1;
+    cursor: not-allowed;
+  } 
+ 
+  .dbdataOftodos{
+    display: flex;
+    gap: 5%;
+    border-radius: 4px;
+    padding-left: 20px;
+    align-items: center;
+/* justify-content: space-around; */
+    border: 2px solid rgb(152, 169, 192);
+  }
+  .todocont{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 200px;
+    margin-top: 40px;
+    display: none;
+  }
+  .cardscont{
+    display: flex;
+gap: 20px;  }
+  .carditm{
+    border-radius: 50px;
+    padding: 6px;
+    padding-top: 10px;
+    border: 2px solid rgb(152, 169, 192);
   }
   /* End Css Reset */
   

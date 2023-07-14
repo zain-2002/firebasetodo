@@ -17,6 +17,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
   const firebaseConfig = {
     apiKey: "AIzaSyCjCu1l3vUidvnqeEX4N32_y0mRR01rG5A",
     authDomain: "zainfirstproject.firebaseapp.com",
+    databaseURL: "https://zainfirstproject-default-rtdb.firebaseio.com",
     projectId: "zainfirstproject",
     storageBucket: "zainfirstproject.appspot.com",
     messagingSenderId: "161134109513",
@@ -28,8 +29,23 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 import { 
-    getAuth, createUserWithEmailAndPassword, onAuthStateChanged,
+    getAuth, createUserWithEmailAndPassword, onAuthStateChanged,signOut,signInWithEmailAndPassword
  } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+ import { 
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  child,
+  set,
+  query,
+  equalTo,
+  get,
+  orderByChild,
+  update,
+  remove
+} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+const db=getDatabase(app);
 const wrapper__Area = document.querySelector('#wrapper_Area');
 
 // Login & Sing-Up Forms
@@ -48,11 +64,34 @@ const confirmPassword = document.querySelector('#signUpConfirmPassword');
 // Login % Sign-Up Submit Buttons
 const loginFormSubmitBtn = document.querySelector('#loginSubmitBtn');
 const signUpFormSubmitBtn = document.querySelector('#signUpSubmitBtn');
-
-
+loginFormSubmitBtn.addEventListener('click',login)
+function login(){
+const uemail=document.getElementById('loginemail').value
+const pass=document.getElementById('loginPassword').value
+  signInWithEmailAndPassword(auth, uemail, pass)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+}
+const logoutbtn=document.getElementById('logoutbtn')
+logoutbtn.addEventListener('click',logout)
+function logout(){
+  signOut(auth).then(() => {
+    // Sign-out successful.
+  }).catch((error) => {
+    // An error happened.
+  });
+}
 signUpFormSubmitBtn.addEventListener('click',register)
-const auth = getAuth();
+const auth = getAuth(app);
 function register(){
+const signUpUsername=document.getElementById('signUpUsername').value
 const uemail=document.getElementById('signUpEmail').value
 const pass=document.getElementById('signUpPassword').value
 
@@ -62,6 +101,14 @@ createUserWithEmailAndPassword(auth, uemail, pass)
     // Signed in 
     const user = userCredential.user;
     console.log(user);
+    const adref=ref(db,`users/${user.uid}/`)
+    const ob={
+      signUpUsername,
+      uemail,
+      pass
+    }
+    set(adref,ob)
+
     // ...
   })
   .catch((error) => {
@@ -73,21 +120,308 @@ createUserWithEmailAndPassword(auth, uemail, pass)
 }
 const logindiv=document.getElementById('formcont')
 const cont=document.getElementById('contentcont')
+const greeting=document.getElementById('greeting')
 onAuthStateChanged(auth, user => {
     if (user) {
       const uid = user.uid
-      console.log('user.uid->', user.uid)
+      loader.style.display = 'none'
       logindiv.style.display='none'
     cont.style.display='block'
+document.body.style.display='block'
+const dbRef = ref(getDatabase());
+get(child(dbRef, `users/${user.uid}/`)).then((snapshot) => {
+  if (snapshot.exists()) {
+    const dbdata=snapshot.val()
+    greeting.innerText='HELLO '+dbdata.signUpUsername.toString().toUpperCase()+'!'
+  } else {
+    console.log("No data available");
+  }
+}).catch((error) => {
+  console.error(error);
+});
 
       // ...
     } else {
       // User is signed out
+      loader.style.display = 'none'
       logindiv.style.display='block'
       cont.style.display='none'
+      document.body.style.display='flex'
       // ...
     }
   })
+
+const todocont=document.getElementById('todocont')
+const addtodo=document.getElementById('addtodo')
+addtodo.addEventListener('click',loadAddtodo)
+function loadAddtodo() {
+  todocont.style.display='block'
+  filtereddiv.style.display='none'
+}
+ const filtereddiv=document.getElementById('filtereddiv')
+ const viewtodo=document.getElementById('viewtodo')
+
+ viewtodo.addEventListener('click',viewtodosfromdb)
+ function viewtodosfromdb(){
+ todocont.style.display='none'
+ filtereddiv.style.display='flex'
+ gettodos();
+
+
+setTimeout(()=>{
+  Array.from(document.getElementsByClassName('edit')).forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      btn.style.opacity='.6'
+      btn.disabled=true
+      btn.nextElementSibling.nextElementSibling.style.display='block';
+      btn.previousElementSibling.firstElementChild.disabled=false;
+      btn.previousElementSibling.previousElementSibling.firstElementChild.readOnly=false;
+      btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=false;
+    
+    })
+  })
+},2000)
+
+setTimeout(()=>{
+  Array.from(document.getElementsByClassName('save')).forEach(btn=>{
+    btn.addEventListener('click',()=>{
+     
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+    });
+    swalWithBootstrapButtons.fire({
+        title: "Are you sure?",
+        text: "Data in database will get changed!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Change",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire("Saved!", "Your changes are applied", "success");
+            btn.style.display='none'
+            
+            btn.previousElementSibling.previousElementSibling.disabled=false
+            btn.previousElementSibling.previousElementSibling.style.opacity='1'
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.disabled=true;
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+            const btid=btn.id.slice(5)
+            const todoRef = ref(db, `todos/${auth.currentUser.uid}/${btid}`);
+            let status
+            (btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.checked) ? status='completed':status='pending'
+         let taskdatetime=btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+let taskinput= btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+console.log(status);            
+update(todoRef, { status,taskdatetime,taskinput})
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
+        };
+    });
+      
+
+    
+    })
+  })
+},2000)
+
+
+setTimeout(()=>{
+  Array.from(document.getElementsByClassName('delete')).forEach(btn=>{
+    btn.addEventListener('click',()=>{
+
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+    });
+    swalWithBootstrapButtons.fire({
+        title: "Are you sure?",
+        text: "Data in database will get deleted!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            swalWithBootstrapButtons.fire("Deleted!", "Your changes are applied", "success");
+            const todoRef = ref(db, `todos/${auth.currentUser.uid}/${btn.id}`)
+            remove(todoRef)
+            viewtodosfromdb();
+           
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
+        };
+    });
+      
+
+
+
+
+    
+    })
+  })
+},2000)
+
+
+
+
+} 
+
+function gettodos(){
+ const todoListRef = ref(db, `todos/${auth.currentUser.uid}`)
+  onValue(todoListRef, snapshot => {
+    const isDataExist = snapshot.exists()
+    if (isDataExist) {
+      filtereddiv.innerHTML = null
+      snapshot.forEach(childSnapshot => {
+       const childKey = childSnapshot.key
+        const childData = childSnapshot.val()
+      
+   
+        const dbdataOftodos=`
+        <div class="dbdataOftodos">
+        <label>TASK : <input type='text' id='taskdone_${childKey}' value='${Object.values(childData)[2]}'></label>
+        <label>TASK DATE AND TIME : <input type='datetime-local' id='tasktime_${childKey}' value='${Object.values(childData)[1]}'></label>
+        <label>STATUS :  <input type="checkbox" id='statuscheck_${childKey}'></label>
+        <button class="dbdatatodosbtn edit"  >EDIT</button>
+        <button class="dbdatatodosbtn delete" id="${childKey}">DELETE</button>
+        <button class="dbdatatodosbtn save" id="save_${childKey}">SAVE</button>
+        </div>
+        `
+       
+        filtereddiv.innerHTML+=dbdataOftodos;
+setTimeout(()=>{
+  if (Object.values(childData)[0]==='completed') {
+    document.getElementById(`statuscheck_${childKey}`).checked=true
+   }
+},1000)
+      
+      
+       document.getElementById(`taskdone_${childKey}`).readOnly=true
+       document.getElementById(`tasktime_${childKey}`).readOnly=true
+       document.getElementById(`statuscheck_${childKey}`).disabled=true
+       document.getElementById(`save_${childKey}`).style.display='none'
+
+
+
+
+      })
+    }
+  })
+}
+const submittodobtn=document.getElementById('submittodobtn')
+submittodobtn.addEventListener('click',addtodoTO_DB)
+function addtodoTO_DB(){
+
+  const taskinput=document.getElementById('taskinput').value
+  const taskdatetime=document.getElementById('taskdatetime').value
+  if (!taskinput || !taskdatetime) return alert('Please add some todo')
+  const todoListRef = ref(db, `todos/${auth.currentUser.uid}`)
+  const newTodoRef = push(todoListRef)
+  const obj = {
+    taskinput,
+    taskdatetime,
+    status: 'pending'
+  }
+  set(newTodoRef, obj)
+  Swal.fire({
+   
+    icon: 'success',
+    title: 'ADDED TO DATABASE',
+    showConfirmButton: false,
+    timer: 2000
+  });
+  setTimeout(()=>{
+    document.getElementById('taskdatetime').value=""
+    document.getElementById('taskinput').value=""
+  },2000)
+ 
+}
+
+
+
+const viewcompletedtodo=document.getElementById('viewcompletedtodo')
+viewcompletedtodo.addEventListener('click',completedtodofunc)
+function completedtodofunc() {
+  filtereddiv.innerHTML=''
+  const completedtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('status'),equalTo('completed'));
+  let count=0;
+  get(completedtasks).then((snapshot)=>{
+   
+snapshot.forEach(childSnapshot =>{
+const obj=childSnapshot.val()
+
+
+  count++;
+  const dbdataOftodos=`
+        <div class="dbdataOftodos">
+        <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
+        <label>TASK DATE AND TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}"></label>
+        <label>STATUS :  <input type="checkbox" id='statuscheck_${count}' checked></label>
+        </div>
+        `
+        filtereddiv.innerHTML+=dbdataOftodos;
+     
+          document.getElementById(`taskdone_${count}`).readOnly=true
+          document.getElementById(`tasktime_${count}`).readOnly=true
+          document.getElementById(`statuscheck_${count}`).disabled=true
+       
+})
+  });
+
+}
+
+const viewtodaystodo=document.getElementById('viewtodaystodo')
+viewtodaystodo.addEventListener('click',todaytodo)
+function todaytodo(){
+  
+  filtereddiv.innerHTML=''
+  const currentDate = luxon.DateTime.now().toFormat("yyyy-MM-dd");
+  let count=0;
+ const completedtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('taskdatetime'));
+  get(completedtasks).then((snapshot)=>{
+   
+    if (snapshot.exists()) {
+      snapshot.forEach((childSnapshot) => {
+        const task = childSnapshot.val();
+        if (task.taskdatetime && task.taskdatetime.split('T')[0] === currentDate) {
+         
+          count++;
+          const dbdataOftodos=`
+                <div class="dbdataOftodos">
+                <label>TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${count}"></label>
+                <label>TASK DATE AND TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${count}"></label>
+                <label>STATUS :  <input type="checkbox" id='statuscheck_${count}'></label>
+                </div>
+                `
+                filtereddiv.innerHTML+=dbdataOftodos;
+                setTimeout(()=>{
+                  
+                  if (task.status==="completed") {
+                   document.getElementById(`statuscheck_${count}`).checked=true;
+                  }
+                },1000)
+                  document.getElementById(`taskdone_${count}`).readOnly=true
+                  document.getElementById(`tasktime_${count}`).readOnly=true
+                  document.getElementById(`statuscheck_${count}`).disabled=true
+        }
+      });
+    } else {
+   
+      console.log("No tasks found for the current date.");
+    }
+  })
+}
 // Show Hide Password Element
 const showHidePassDom = Array.from(document.querySelectorAll('.showHide__Icon i'));
 
