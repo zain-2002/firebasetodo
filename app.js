@@ -121,6 +121,7 @@ createUserWithEmailAndPassword(auth, uemail, pass)
 const logindiv=document.getElementById('formcont')
 const cont=document.getElementById('contentcont')
 const greeting=document.getElementById('greeting')
+const loader=document.getElementById('loader')
 onAuthStateChanged(auth, user => {
     if (user) {
       const uid = user.uid

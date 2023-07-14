@@ -55,7 +55,10 @@ margin-top: 40px;
     opacity: 1;
     cursor: not-allowed;
   } 
- 
+ #formcont,#contentcont{
+  display: none;
+ }
+
   .dbdataOftodos{
     display: flex;
     gap: 5%;
