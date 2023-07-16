@@ -151,12 +151,23 @@ get(child(dbRef, `users/${user.uid}/`)).then((snapshot) => {
       // ...
     }
   })
+  function buttonColors(btn){
+    Array.from(document.getElementsByClassName('chipbtn')).forEach((bt)=>{
+      bt.parentElement.style.backgroundColor='transparent';
+      bt.style.color='black'
+    })
+    btn.parentElement.style.backgroundColor='rgb(60, 120, 233)';
+btn.style.color='white'
+
+
+  }
 
 const todocont=document.getElementById('todocont')
 const addtodo=document.getElementById('addtodo')
 addtodo.addEventListener('click',loadAddtodo)
 function loadAddtodo() {
-  todocont.style.display='block'
+  buttonColors(this);
+  todocont.style.display='flex'
   filtereddiv.style.display='none'
 }
  const filtereddiv=document.getElementById('filtereddiv')
@@ -164,11 +175,18 @@ function loadAddtodo() {
 
  viewtodo.addEventListener('click',viewtodosfromdb)
  function viewtodosfromdb(){
- todocont.style.display='none'
- filtereddiv.style.display='flex'
+
+
+   buttonColors(this);
+ 
+ todocont.style.display='none';
+ filtereddiv.style.display='flex';
+ 
  gettodos();
 
-
+let taskdata=null;
+let datetimedata=null
+let checkboxdata=null;
 setTimeout(()=>{
   Array.from(document.getElementsByClassName('edit')).forEach(btn=>{
     btn.addEventListener('click',()=>{
@@ -178,10 +196,14 @@ setTimeout(()=>{
       btn.previousElementSibling.firstElementChild.disabled=false;
       btn.previousElementSibling.previousElementSibling.firstElementChild.readOnly=false;
       btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=false;
+      datetimedata=btn.previousElementSibling.previousElementSibling.firstElementChild.value;
+      taskdata=btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value;
+      checkboxdata=(btn.previousElementSibling.firstElementChild.checked) ? true : false;
+     
     
     })
   })
-},2000)
+},1000)
 
 setTimeout(()=>{
   Array.from(document.getElementsByClassName('save')).forEach(btn=>{
@@ -218,10 +240,23 @@ setTimeout(()=>{
             (btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.checked) ? status='completed':status='pending'
          let taskdatetime=btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
 let taskinput= btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
-console.log(status);            
 update(todoRef, { status,taskdatetime,taskinput})
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
+            btn.previousElementSibling.previousElementSibling.disabled=false
+            btn.previousElementSibling.previousElementSibling.style.opacity='1'
+            btn.style.display='none'
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.disabled=true;
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+
+            btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value=taskdata;
+
+ btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value=datetimedata;
+
+ btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.checked=checkboxdata;
+
+
         };
     });
       
@@ -229,7 +264,7 @@ update(todoRef, { status,taskdatetime,taskinput})
     
     })
   })
-},2000)
+},1000)
 
 
 setTimeout(()=>{
@@ -271,7 +306,7 @@ setTimeout(()=>{
     
     })
   })
-},2000)
+},1000)
 
 
 
@@ -292,7 +327,7 @@ function gettodos(){
         const dbdataOftodos=`
         <div class="dbdataOftodos">
         <label>TASK : <input type='text' id='taskdone_${childKey}' value='${Object.values(childData)[2]}'></label>
-        <label>TASK DATE AND TIME : <input type='datetime-local' id='tasktime_${childKey}' value='${Object.values(childData)[1]}'></label>
+        <label>TASK DATE/TIME : <input type='datetime-local' id='tasktime_${childKey}' value='${Object.values(childData)[1]}'></label>
         <label>STATUS :  <input type="checkbox" id='statuscheck_${childKey}'></label>
         <button class="dbdatatodosbtn edit"  >EDIT</button>
         <button class="dbdatatodosbtn delete" id="${childKey}">DELETE</button>
@@ -340,7 +375,7 @@ function addtodoTO_DB(){
     icon: 'success',
     title: 'ADDED TO DATABASE',
     showConfirmButton: false,
-    timer: 2000
+    timer: 1000
   });
   setTimeout(()=>{
     document.getElementById('taskdatetime').value=""
@@ -349,11 +384,41 @@ function addtodoTO_DB(){
  
 }
 
+const viewpendingtodo=document.getElementById('viewpendingtodo')
+viewpendingtodo.addEventListener('click',pendingtodofunc)
+function pendingtodofunc() {
+  buttonColors(this);
+  filtereddiv.innerHTML=''
+  const pendingtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('status'),equalTo('pending'));
+  let count=0;
+  get(pendingtasks).then((snapshot)=>{
+   
+snapshot.forEach(childSnapshot =>{
+const obj=childSnapshot.val()
 
 
+  count++;
+  const dbdataOftodos=`
+        <div class="dbdataOftodos">
+        <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
+        <label>TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}"></label>
+        <label>STATUS :  <input type="checkbox" id='statuscheck_${count}' ></label>
+        </div>
+        `
+        filtereddiv.innerHTML+=dbdataOftodos;
+     
+          document.getElementById(`taskdone_${count}`).readOnly=true
+          document.getElementById(`tasktime_${count}`).readOnly=true
+          document.getElementById(`statuscheck_${count}`).disabled=true
+       
+})
+  });
+
+}
 const viewcompletedtodo=document.getElementById('viewcompletedtodo')
 viewcompletedtodo.addEventListener('click',completedtodofunc)
 function completedtodofunc() {
+  buttonColors(this);
   filtereddiv.innerHTML=''
   const completedtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('status'),equalTo('completed'));
   let count=0;
@@ -367,7 +432,7 @@ const obj=childSnapshot.val()
   const dbdataOftodos=`
         <div class="dbdataOftodos">
         <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
-        <label>TASK DATE AND TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}"></label>
+        <label>TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}"></label>
         <label>STATUS :  <input type="checkbox" id='statuscheck_${count}' checked></label>
         </div>
         `
@@ -385,7 +450,7 @@ const obj=childSnapshot.val()
 const viewtodaystodo=document.getElementById('viewtodaystodo')
 viewtodaystodo.addEventListener('click',todaytodo)
 function todaytodo(){
-  
+  buttonColors(this);
   filtereddiv.innerHTML=''
   const currentDate = luxon.DateTime.now().toFormat("yyyy-MM-dd");
   let count=0;
@@ -401,7 +466,7 @@ function todaytodo(){
           const dbdataOftodos=`
                 <div class="dbdataOftodos">
                 <label>TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${count}"></label>
-                <label>TASK DATE AND TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${count}"></label>
+                <label>TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${count}"></label>
                 <label>STATUS :  <input type="checkbox" id='statuscheck_${count}'></label>
                 </div>
                 `
