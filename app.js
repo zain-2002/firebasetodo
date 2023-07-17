@@ -173,16 +173,55 @@ function loadAddtodo() {
  const filtereddiv=document.getElementById('filtereddiv')
  const viewtodo=document.getElementById('viewtodo')
 
- viewtodo.addEventListener('click',viewtodosfromdb)
+ viewtodo.addEventListener('click',() =>{ viewtodosfromdb()})
  function viewtodosfromdb(){
 
+  Array.from(document.getElementsByClassName('chipbtn')).forEach((bt)=>{
+    bt.parentElement.style.backgroundColor='transparent';
+    bt.style.color='black'
+  })
+  
+  document.getElementById('viewtodo').parentElement.style.backgroundColor='rgb(60, 120, 233)';
+  document.getElementById('viewtodo').style.color='white'
 
-   buttonColors(this);
  
  todocont.style.display='none';
  filtereddiv.style.display='flex';
  
- gettodos();
+ const todoListRef = ref(db, `todos/${auth.currentUser.uid}`)
+  onValue(todoListRef, snapshot => {
+    const isDataExist = snapshot.exists()
+    if (isDataExist) {
+      filtereddiv.innerHTML = null
+      snapshot.forEach(childSnapshot => {
+       const childKey = childSnapshot.key
+        const childData = childSnapshot.val()
+      
+   
+        const dbdataOftodos=`
+        <div class="dbdataOftodos">
+        <label>TASK : <input type='text' id='taskdone_${childKey}' value='${Object.values(childData)[3]}'></label>
+        <label>TASK DATE/TIME : <input type='datetime-local' id='tasktime_${childKey}' value='${Object.values(childData)[2]}'></label>
+        <label>STATUS :  <input type="checkbox" id='statuscheck_${childKey}'></label>
+        <button class="dbdatatodosbtn edit"  >EDIT</button>
+        <button class="dbdatatodosbtn delete" id="${childKey}">DELETE</button>
+        <button class="dbdatatodosbtn save" id="save_${childKey}">SAVE</button>
+        </div>
+        `
+       
+        filtereddiv.innerHTML+=dbdataOftodos;
+setTimeout(()=>{
+  if (Object.values(childData)[1]==='completed') {
+    document.getElementById(`statuscheck_${childKey}`).checked=true
+   }
+},200)
+      
+      
+       document.getElementById(`taskdone_${childKey}`).readOnly=true
+       document.getElementById(`tasktime_${childKey}`).readOnly=true
+       document.getElementById(`statuscheck_${childKey}`).disabled=true
+       document.getElementById(`save_${childKey}`).style.display='none'
+      })}})
 
 let taskdata=null;
 let datetimedata=null
@@ -199,11 +238,10 @@ setTimeout(()=>{
       datetimedata=btn.previousElementSibling.previousElementSibling.firstElementChild.value;
       taskdata=btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value;
       checkboxdata=(btn.previousElementSibling.firstElementChild.checked) ? true : false;
-     
     
     })
   })
-},1000)
+},200)
 
 setTimeout(()=>{
   Array.from(document.getElementsByClassName('save')).forEach(btn=>{
@@ -241,6 +279,7 @@ setTimeout(()=>{
          let taskdatetime=btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
 let taskinput= btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
 update(todoRef, { status,taskdatetime,taskinput})
+viewtodosfromdb();
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
             btn.previousElementSibling.previousElementSibling.disabled=false
@@ -264,7 +303,7 @@ update(todoRef, { status,taskdatetime,taskinput})
     
     })
   })
-},1000)
+},200)
 
 
 setTimeout(()=>{
@@ -292,11 +331,13 @@ setTimeout(()=>{
             swalWithBootstrapButtons.fire("Deleted!", "Your changes are applied", "success");
             const todoRef = ref(db, `todos/${auth.currentUser.uid}/${btn.id}`)
             remove(todoRef)
-            viewtodosfromdb();
-           
+            setTimeout(()=>{
+              viewtodosfromdb()
+            },200)
+           btn.parentElement.remove();
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
-        };
+        };  
     });
       
 
@@ -306,55 +347,14 @@ setTimeout(()=>{
     
     })
   })
-},1000)
+},200)
 
 
 
 
 } 
 
-function gettodos(){
- const todoListRef = ref(db, `todos/${auth.currentUser.uid}`)
-  onValue(todoListRef, snapshot => {
-    const isDataExist = snapshot.exists()
-    if (isDataExist) {
-      filtereddiv.innerHTML = null
-      snapshot.forEach(childSnapshot => {
-       const childKey = childSnapshot.key
-        const childData = childSnapshot.val()
-      
-   
-        const dbdataOftodos=`
-        <div class="dbdataOftodos">
-        <label>TASK : <input type='text' id='taskdone_${childKey}' value='${Object.values(childData)[2]}'></label>
-        <label>TASK DATE/TIME : <input type='datetime-local' id='tasktime_${childKey}' value='${Object.values(childData)[1]}'></label>
-        <label>STATUS :  <input type="checkbox" id='statuscheck_${childKey}'></label>
-        <button class="dbdatatodosbtn edit"  >EDIT</button>
-        <button class="dbdatatodosbtn delete" id="${childKey}">DELETE</button>
-        <button class="dbdatatodosbtn save" id="save_${childKey}">SAVE</button>
-        </div>
-        `
-       
-        filtereddiv.innerHTML+=dbdataOftodos;
-setTimeout(()=>{
-  if (Object.values(childData)[0]==='completed') {
-    document.getElementById(`statuscheck_${childKey}`).checked=true
-   }
-},1000)
-      
-      
-       document.getElementById(`taskdone_${childKey}`).readOnly=true
-       document.getElementById(`tasktime_${childKey}`).readOnly=true
-       document.getElementById(`statuscheck_${childKey}`).disabled=true
-       document.getElementById(`save_${childKey}`).style.display='none'
 
-
-
-
-      })
-    }
-  })
-}
 const submittodobtn=document.getElementById('submittodobtn')
 submittodobtn.addEventListener('click',addtodoTO_DB)
 function addtodoTO_DB(){
@@ -369,6 +369,10 @@ function addtodoTO_DB(){
     taskdatetime,
     status: 'pending'
   }
+  const newTodoKey = newTodoRef.key;
+
+// Add the key to your obj
+obj.key = newTodoKey;
   set(newTodoRef, obj)
   Swal.fire({
    
@@ -380,41 +384,196 @@ function addtodoTO_DB(){
   setTimeout(()=>{
     document.getElementById('taskdatetime').value=""
     document.getElementById('taskinput').value=""
-  },2000)
+  },200)
  
 }
 
 const viewpendingtodo=document.getElementById('viewpendingtodo')
 viewpendingtodo.addEventListener('click',pendingtodofunc)
 function pendingtodofunc() {
-  buttonColors(this);
+ 
+  Array.from(document.getElementsByClassName('chipbtn')).forEach((bt)=>{
+    bt.parentElement.style.backgroundColor='transparent';
+    bt.style.color='black'
+  })
+  
+  document.getElementById('viewpendingtodo').parentElement.style.backgroundColor='rgb(60, 120, 233)';
+  document.getElementById('viewpendingtodo').style.color='white'
+
+
+
+
   filtereddiv.innerHTML=''
   const pendingtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('status'),equalTo('pending'));
-  let count=0;
   get(pendingtasks).then((snapshot)=>{
    
 snapshot.forEach(childSnapshot =>{
 const obj=childSnapshot.val()
 
 
-  count++;
+
   const dbdataOftodos=`
         <div class="dbdataOftodos">
-        <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
-        <label>TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}"></label>
-        <label>STATUS :  <input type="checkbox" id='statuscheck_${count}' ></label>
+        <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${obj.key}"></label>
+        <label>TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${obj.key}"></label>
+        <label>STATUS :  <input type="checkbox" id='statuscheck_${obj.key}' ></label>
+        <button class="dbdatatodosbtn edit"  >EDIT</button>
+        <button class="dbdatatodosbtn delete" id="${obj.key}">DELETE</button>
+        <button class="dbdatatodosbtn save" id="save_${obj.key}">SAVE</button>
         </div>
         `
         filtereddiv.innerHTML+=dbdataOftodos;
      
-          document.getElementById(`taskdone_${count}`).readOnly=true
-          document.getElementById(`tasktime_${count}`).readOnly=true
-          document.getElementById(`statuscheck_${count}`).disabled=true
+         document.getElementById(`taskdone_${obj.key}`).readOnly=true
+         document.getElementById(`tasktime_${obj.key}`).readOnly=true
+         document.getElementById(`statuscheck_${obj.key}`).disabled=true
+         document.getElementById(`save_${obj.key}`).style.display='none'
        
+         editb_Save_DeletebtnFunc(pendingtodofunc)
 })
   });
 
 }
+
+function editb_Save_DeletebtnFunc(callback){
+
+
+  
+let taskdata=null;
+let datetimedata=null
+let checkboxdata=null;
+  setTimeout(()=>{
+    Array.from(document.getElementsByClassName('edit')).forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        btn.style.opacity='.6'
+        btn.disabled=true
+        btn.nextElementSibling.nextElementSibling.style.display='block';
+        btn.previousElementSibling.firstElementChild.disabled=false;
+        btn.previousElementSibling.previousElementSibling.firstElementChild.readOnly=false;
+        btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=false;
+        datetimedata=btn.previousElementSibling.previousElementSibling.firstElementChild.value;
+        taskdata=btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value;
+        checkboxdata=(btn.previousElementSibling.firstElementChild.checked) ? true : false;
+      
+      })
+    })
+  },200)
+
+
+  setTimeout(()=>{
+    Array.from(document.getElementsByClassName('save')).forEach(btn=>{
+      btn.addEventListener('click',()=>{
+       
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+              confirmButton: "btn btn-success",
+              cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+          title: "Are you sure?",
+          text: "Data in database will get changed!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Change",
+          cancelButtonText: "Cancel",
+          reverseButtons: true
+      }).then((result) => {
+          if (result.isConfirmed) {
+              swalWithBootstrapButtons.fire("Saved!", "Your changes are applied", "success");
+              btn.style.display='none'
+              
+              btn.previousElementSibling.previousElementSibling.disabled=false
+              btn.previousElementSibling.previousElementSibling.style.opacity='1'
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.disabled=true;
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+              const btid=btn.id.slice(5)
+              const todoRef = ref(db, `todos/${auth.currentUser.uid}/${btid}`);
+              let status
+              (btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.checked) ? status='completed':status='pending'
+           let taskdatetime=btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+  let taskinput= btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+  update(todoRef, { status,taskdatetime,taskinput})
+  callback();
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+              swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
+              btn.previousElementSibling.previousElementSibling.disabled=false
+              btn.previousElementSibling.previousElementSibling.style.opacity='1'
+              btn.style.display='none'
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.disabled=true;
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.readOnly=true;
+  
+              btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value=taskdata;
+  
+   btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value=datetimedata;
+  
+   btn.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.checked=checkboxdata;
+  
+  
+          };
+      });
+        
+  
+      
+      })
+    })
+  },200)
+
+
+
+  setTimeout(()=>{
+    Array.from(document.getElementsByClassName('delete')).forEach(btn=>{
+      btn.addEventListener('click',()=>{
+  
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+              confirmButton: "btn btn-success",
+              cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+          title: "Are you sure?",
+          text: "Data in database will get deleted!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Delete",
+          cancelButtonText: "Cancel",
+          reverseButtons: true
+      }).then((result) => {
+          if (result.isConfirmed) {
+  
+              swalWithBootstrapButtons.fire("Deleted!", "Your changes are applied", "success");
+              const todoRef = ref(db, `todos/${auth.currentUser.uid}/${btn.id}`)
+              remove(todoRef)
+              setTimeout(()=>{
+                callback()
+              },200)
+             btn.parentElement.remove();
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+              swalWithBootstrapButtons.fire("Cancelled", "Your changes are rejeccted!", "error");
+          };  
+      });
+        
+  
+  
+  
+  
+      
+      })
+    })
+  },200)
+  
+
+
+  
+}
+
+
+
 const viewcompletedtodo=document.getElementById('viewcompletedtodo')
 viewcompletedtodo.addEventListener('click',completedtodofunc)
 function completedtodofunc() {
@@ -436,6 +595,9 @@ const obj=childSnapshot.val()
         <label>STATUS :  <input type="checkbox" id='statuscheck_${count}' checked></label>
         </div>
         `
+
+
+        
         filtereddiv.innerHTML+=dbdataOftodos;
      
           document.getElementById(`taskdone_${count}`).readOnly=true
@@ -450,11 +612,18 @@ const obj=childSnapshot.val()
 const viewtodaystodo=document.getElementById('viewtodaystodo')
 viewtodaystodo.addEventListener('click',todaytodo)
 function todaytodo(){
-  buttonColors(this);
+  Array.from(document.getElementsByClassName('chipbtn')).forEach((bt)=>{
+    bt.parentElement.style.backgroundColor='transparent';
+    bt.style.color='black'
+  })
+  
+  document.getElementById('viewtodaystodo').parentElement.style.backgroundColor='rgb(60, 120, 233)';
+  document.getElementById('viewtodaystodo').style.color='white'
   filtereddiv.innerHTML=''
   const currentDate = luxon.DateTime.now().toFormat("yyyy-MM-dd");
-  let count=0;
+  
  const completedtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('taskdatetime'));
+ let arr=[]
   get(completedtasks).then((snapshot)=>{
    
     if (snapshot.exists()) {
@@ -462,24 +631,30 @@ function todaytodo(){
         const task = childSnapshot.val();
         if (task.taskdatetime && task.taskdatetime.split('T')[0] === currentDate) {
          
-          count++;
+        
           const dbdataOftodos=`
                 <div class="dbdataOftodos">
-                <label>TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${count}"></label>
-                <label>TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${count}"></label>
-                <label>STATUS :  <input type="checkbox" id='statuscheck_${count}'></label>
+                <label>TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${task.key}"></label>
+                <label>TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${task.key}"></label>
+                <label>STATUS :  <input type="checkbox" id='statuscheck_${task.key}'  ></label>
+                <button class="dbdatatodosbtn edit"  >EDIT</button>
+                <button class="dbdatatodosbtn delete" id="${task.key}">DELETE</button>
+                <button class="dbdatatodosbtn save" id="save_${task.key}">SAVE</button>
                 </div>
                 `
                 filtereddiv.innerHTML+=dbdataOftodos;
-                setTimeout(()=>{
-                  
-                  if (task.status==="completed") {
-                   document.getElementById(`statuscheck_${count}`).checked=true;
-                  }
-                },1000)
-                  document.getElementById(`taskdone_${count}`).readOnly=true
-                  document.getElementById(`tasktime_${count}`).readOnly=true
-                  document.getElementById(`statuscheck_${count}`).disabled=true
+            
+                const statusValue = task.status === 'completed' ? true : false;
+                console.log(statusValue);
+                const statusCheckbox = document.getElementById(`statuscheck_${task.key}`);
+                statusCheckbox.setAttribute('checked', statusValue);
+
+         document.getElementById(`taskdone_${task.key}`).readOnly=true
+         document.getElementById(`tasktime_${task.key}`).readOnly=true
+         document.getElementById(`statuscheck_${task.key}`).disabled=true
+         document.getElementById(`save_${task.key}`).style.display='none'
+       
+         editb_Save_DeletebtnFunc(todaytodo)
         }
       });
     } else {
