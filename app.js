@@ -108,8 +108,8 @@ createUserWithEmailAndPassword(auth, uemail, pass)
       pass
     }
     set(adref,ob)
-
     // ...
+    setTimeout(()=>{location.reload()},300)
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -117,12 +117,16 @@ createUserWithEmailAndPassword(auth, uemail, pass)
     console.log(errorMessage);
     // ..
   });
+
+
+
 }
 const logindiv=document.getElementById('formcont')
 const cont=document.getElementById('contentcont')
 const greeting=document.getElementById('greeting')
 const loader=document.getElementById('loader')
 onAuthStateChanged(auth, user => {
+  
     if (user) {
       const uid = user.uid
       loader.style.display = 'none'
@@ -133,6 +137,7 @@ const dbRef = ref(getDatabase());
 get(child(dbRef, `users/${user.uid}/`)).then((snapshot) => {
   if (snapshot.exists()) {
     const dbdata=snapshot.val()
+    console.log(dbdata);
     greeting.innerText='HELLO '+dbdata.signUpUsername.toString().toUpperCase()+'!'
   } else {
     console.log("No data available");
@@ -230,9 +235,9 @@ function loadAddtodo() {
    
         const dbdataOftodos=`
         <div class="dbdataOftodos">
-        <label>TASK : <input type='text' id='taskdone_${childKey}' value='${Object.values(childData)[3]}'></label>
-        <label>TASK DATE/TIME : <input type='datetime-local' id='tasktime_${childKey}' min="" value='${Object.values(childData)[2]}'></label>
-        <label>STATUS :  <input type="checkbox" id='statuscheck_${childKey}'></label>
+        <label class="task_Lbl">TASK : <input type='text' id='taskdone_${childKey}' value='${Object.values(childData)[3]}' class='inputdata'></label>
+        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' id='tasktime_${childKey}' min="" value='${Object.values(childData)[2]}' class='inputdata'></label>
+        <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${childKey}'></label>
         <button class="dbdatatodosbtn edit" id="edit_${childKey}" >EDIT</button>
         <button class="dbdatatodosbtn delete" id="${childKey}">DELETE</button>
         <button class="dbdatatodosbtn save" id="save_${childKey}">SAVE</button>
@@ -337,6 +342,16 @@ swalWithBootstrapButtons.fire({
 
 }
 function saveFunc(){
+  const taskinput=this.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+  const taskdatetime=this.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+  if (!taskinput || !taskdatetime) return Swal.fire({
+   
+    icon: 'error',
+    title: 'Fill Both First',
+    showConfirmButton: false,
+    timer: 1000
+  });
+
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
         confirmButton: "btn btn-success",
@@ -455,9 +470,9 @@ obj=childSnapshot.val()
 const task=childSnapshot.val()
   const dbdataOftodos=`
         <div class="dbdataOftodos">
-        <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${obj.key}" required></label>
-        <label>TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${obj.key}" required></label>
-        <label>STATUS :  <input type="checkbox" id='statuscheck_${obj.key}' ></label>
+        <label class="task_Lbl">TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${obj.key}" required></label>
+        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${obj.key}" required></label>
+        <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${obj.key}' ></label>
         <button class="dbdatatodosbtn edit"  >EDIT</button>
         <button class="dbdatatodosbtn delete" id="${obj.key}">DELETE</button>
         <button class="dbdatatodosbtn save" id="save_${obj.key}">SAVE</button>
@@ -542,7 +557,22 @@ let checkboxdata=null;
     Array.from(document.getElementsByClassName('save')).forEach(btn=>{
       btn.addEventListener('click',()=>{
        
-
+        const taskinput=btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+        const taskdatetime=btn.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.value
+        if (!taskinput || !taskdatetime) return Swal.fire({
+         
+          icon: 'error',
+          title: 'Fill Both First',
+          showConfirmButton: false,
+          timer: 1000
+        });
+        const todoListRef = ref(db, `todos/${auth.currentUser.uid}`)
+        const newTodoRef = push(todoListRef)
+        const obj = {
+          taskinput,
+          taskdatetime,
+          status: 'pending'
+        }
 
 
         
@@ -675,9 +705,9 @@ snapshot.forEach(childSnapshot =>{
   count++;
   const dbdataOftodos=`
         <div class="dbdataOftodos">
-        <label>TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
-        <label>TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}" ></label>
-        <label>STATUS :  <input type="checkbox" id='statuscheck_${count}' checked></label>
+        <label class="task_Lbl">TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
+        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}" ></label>
+        <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${count}' checked></label>
         </div>
         `
 
@@ -735,9 +765,9 @@ function todaytodo(){
         
           const dbdataOftodos=`
                 <div class="dbdataOftodos">
-                <label>TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${task.key}" required></label>
-                <label>TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${task.key}" required></label>
-                <label>STATUS :  <input type="checkbox" id='statuscheck_${task.key}'  ></label>
+                <label class="task_Lbl">TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${task.key}" required></label>
+                <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${task.key}" required></label>
+                <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${task.key}'  ></label>
                 <button class="dbdatatodosbtn edit"  >EDIT</button>
                 <button class="dbdatatodosbtn delete" id="${task.key}">DELETE</button>
                 <button class="dbdatatodosbtn save" id="save_${task.key}">SAVE</button>

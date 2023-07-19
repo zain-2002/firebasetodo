@@ -1,4 +1,4 @@
-/* Main Css Reset */
+
 :root{
     --white-color         : rgb(255, 255, 255);
     --balck-color         : rgb(0, 0, 0);
@@ -71,12 +71,13 @@ margin-top: 40px;
 }
   .dbdataOftodos{
     display: flex;
-    gap: 5%;
+    /* gap: 5%; */
     border-radius: 4px;
     padding: 10px;
-    padding-left: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
     align-items: center;
-/* justify-content: space-around; */
+justify-content: space-evenly;
     border: 2px solid rgb(152, 169, 192);
   }
   .todocont{
@@ -495,3 +496,135 @@ gap: 20px;  }
   /* End Aside Animation */
   
   /* End Wrapper Area */
+
+  
+@media screen and (max-width:1200px){
+
+  .dbdataOftodos{
+   
+   
+    align-items: center;
+    font-size: 14px;
+
+  } 
+  .cardscont{
+    font-size: 12px;
+    font-weight: 600;
+    align-items: center;
+  }
+  .carditm{
+    border-radius: 50px;
+    padding: 6px;
+    padding-top: 8px;
+    border: 2px solid rgb(152, 169, 192);
+    margin-top: 10px;
+  }
+  /* .task_Lbl{
+width: 200px;
+  }
+ .time_Lbl{
+  width: 200px;
+ }
+ .status_Lbl{
+
+ }
+  .time_Lbl >{
+  width: 200px;
+ }  */
+  
+} 
+
+@media screen and (max-width:998px){
+
+  .dbdataOftodos{
+   
+   
+    align-items: center;
+    font-size: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+  } 
+  .cardscont{
+    gap: 10px;
+    font-size: 9px;
+    font-weight: 600;
+    align-items: center;
+  }
+  .carditm{
+    border-radius: 50px;
+    padding: 6px;
+    padding-top: 8px;
+    border: 2px solid rgb(152, 169, 192);
+    margin-top: 10px;
+  }
+  /* .task_Lbl{
+width: 200px;
+  }
+ .time_Lbl{
+  width: 200px;
+ }
+ .status_Lbl{
+
+ }
+  .time_Lbl >{
+  width: 200px;
+ }  */
+  
+} 
+@media screen and (max-width:766px){
+
+  .dbdataOftodos{
+   
+   
+    align-items: center;
+    font-size: 9px;
+    padding-left: 5px;
+    padding-right: 5px;
+justify-content: center;
+gap: 15px;
+  } 
+  .cardscont{
+    gap: 5px;
+    font-size: 9px;
+    font-weight: 600;
+    align-items: center;
+  }
+  .carditm{
+    border-radius: 50px;
+    padding: 6px;
+    padding-top: 8px;
+    border: 2px solid rgb(152, 169, 192);
+    margin-top: 10px;
+  }
+ .inputdata{
+    width: 90px;
+    padding-left: 5px;
+  }
+  .logoutcont{
+    width: 52px;
+    padding-right: 8px;
+  }
+  .logoutbtns{
+    width: 40px !important;
+    
+  }
+  .time_Lbl{
+    width: 190px;
+   }
+   .status_Lbl{
+width: 70px;
+   }
+   .task_Lbl{
+    width: 150px;
+      }
+  /* .task_Lbl{
+width: 200px;
+  }
+
+
+  .time_Lbl >{
+  width: 200px;
+ }  */
+  
+} 
