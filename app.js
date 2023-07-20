@@ -482,8 +482,8 @@ obj=childSnapshot.val()
 const task=childSnapshot.val()
   const dbdataOftodos=`
         <div class="dbdataOftodos">
-        <label class="task_Lbl">TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${obj.key}" required></label>
-        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${obj.key}" required></label>
+        <label class="task_Lbl">TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${obj.key}" required class='inputdata'></label>
+        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${obj.key}" required class='inputdata'></label>
         <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${obj.key}' ></label>
         <button class="dbdatatodosbtn edit"  >EDIT</button>
         <button class="dbdatatodosbtn delete" id="${obj.key}">DELETE</button>
@@ -717,8 +717,8 @@ snapshot.forEach(childSnapshot =>{
   count++;
   const dbdataOftodos=`
         <div class="dbdataOftodos">
-        <label class="task_Lbl">TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}"></label>
-        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}" ></label>
+        <label class="task_Lbl">TASK : <input type='text'  value='${obj.taskinput}' id="taskdone_${count}" class='inputdata'></label>
+        <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${obj.taskdatetime}' id="tasktime_${count}" class='inputdata' ></label>
         <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${count}' checked></label>
         </div>
         `
@@ -775,8 +775,8 @@ function todaytodo(){
         
           const dbdataOftodos=`
                 <div class="dbdataOftodos">
-                <label class="task_Lbl">TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${task.key}" required></label>
-                <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${task.key}" required></label>
+                <label class="task_Lbl">TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${task.key}" required class='inputdata'></label>
+                <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${task.key}" required class='inputdata'></label>
                 <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${task.key}'  ></label>
                 <button class="dbdatatodosbtn edit"  >EDIT</button>
                 <button class="dbdatatodosbtn delete" id="${task.key}">DELETE</button>
