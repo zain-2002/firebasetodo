@@ -63,7 +63,7 @@ const confirmPassword = document.querySelector('#signUpConfirmPassword');
 
 // Login % Sign-Up Submit Buttons
 const loginFormSubmitBtn = document.querySelector('#loginSubmitBtn');
-const signUpFormSubmitBtn = document.querySelector('#signUpSubmitBtn');
+const signUpFormSubmitBtn = document.getElementById('signUpSubmitBtn');
 loginFormSubmitBtn.addEventListener('click',login)
 function login(){
 const uemail=document.getElementById('loginemail').value
@@ -77,6 +77,14 @@ const pass=document.getElementById('loginPassword').value
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    Swal.fire({
+     
+      icon: 'error',
+      title: `Incorrect Email OR Password`,
+      showConfirmButton: false,
+      timer: 1000
+    });
+
   });
 }
 const logoutbtn=document.getElementById('logoutbtn')
@@ -96,28 +104,33 @@ const uemail=document.getElementById('signUpEmail').value
 const pass=document.getElementById('signUpPassword').value
 
 
-createUserWithEmailAndPassword(auth, uemail, pass)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    console.log(user);
-    const adref=ref(db,`users/${user.uid}/`)
-    const ob={
-      signUpUsername,
-      uemail,
-      pass
-    }
-    set(adref,ob)
-    // ...
-    setTimeout(()=>{location.reload()},300)
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorMessage);
-    // ..
-  });
 
+createUserWithEmailAndPassword(auth, uemail, pass)
+.then((userCredential) => {
+  // Signed in
+  const user = userCredential.user;
+  console.log(user);
+  const adref = ref(db, `users/${user.uid}/`);
+  const ob = {
+    signUpUsername,
+    uemail,
+    pass,
+  };
+  set(adref, ob)
+    .then(() => {
+      // Data saved successfully
+      setTimeout(() => { location.reload() }, 300);
+    })
+    .catch((error) => {
+      console.error('Error saving data:', error);
+    });
+})
+.catch((error) => {
+  const errorCode = error.code;
+  const errorMessage = error.message;
+  console.log(errorMessage);
+  // Handle error during signup
+});
 
 
 }
@@ -137,7 +150,6 @@ const dbRef = ref(getDatabase());
 get(child(dbRef, `users/${user.uid}/`)).then((snapshot) => {
   if (snapshot.exists()) {
     const dbdata=snapshot.val()
-    console.log(dbdata);
     greeting.innerText='HELLO '+dbdata.signUpUsername.toString().toUpperCase()+'!'
   } else {
     console.log("No data available");
@@ -751,7 +763,6 @@ function todaytodo(){
   document.getElementById('viewtodaystodo').style.color='white'
   filtereddiv.innerHTML=''
   const currentDate = luxon.DateTime.now().toFormat("yyyy-MM-dd");
-  let obj=null;
  const completedtasks = query(ref(db, `todos/${auth.currentUser.uid}`), orderByChild('taskdatetime'));
  
   get(completedtasks).then((snapshot)=>{
@@ -759,7 +770,6 @@ function todaytodo(){
     if (snapshot.exists()) {
       snapshot.forEach((childSnapshot) => {
        const  task = childSnapshot.val();
-       obj=childSnapshot.val();
         if (task.taskdatetime && task.taskdatetime.split('T')[0] === currentDate) {
          
         
