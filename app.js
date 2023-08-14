@@ -777,7 +777,7 @@ function todaytodo(){
                 <div class="dbdataOftodos">
                 <label class="task_Lbl">TASK : <input type='text'  value='${task.taskinput}' id="taskdone_${task.key}" required class='inputdata'></label>
                 <label class="time_Lbl">TASK DATE/TIME : <input type='datetime-local' value='${task.taskdatetime}' id="tasktime_${task.key}" required class='inputdata'></label>
-                <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${task.key}'  ></label>
+                <label class="status_Lbl">STATUS :  <input type="checkbox" id='statuscheck_${task.key}'   ></label>
                 <button class="dbdatatodosbtn edit"  >EDIT</button>
                 <button class="dbdatatodosbtn delete" id="${task.key}">DELETE</button>
                 <button class="dbdatatodosbtn save" id="save_${task.key}">SAVE</button>

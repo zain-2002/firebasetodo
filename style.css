@@ -492,12 +492,16 @@ gap: 20px;  }
   .wrapper__area.sign-up__Mode-active .sign-up__aside-info{
     opacity: 1;
   }
+  .status_Lbl{
+    padding-top: 2px;
+       }
+     
   
   /* End Aside Animation */
   
   /* End Wrapper Area */
 
-  
+
 @media screen and (max-width:1200px){
 
   .dbdataOftodos{
@@ -537,10 +541,12 @@ width: 200px;
 @media screen and (max-width:998px){
 
   .dbdataOftodos{
-   
-   
-    align-items: center;
-    font-size: 10px;
+   display: grid;
+   grid-template-columns: 1fr 1fr 80px 60px 60px 60px;
+   gap: 5px;
+   /* flex-wrap:wrap ; */
+   /* justify-content: space-evenly; */
+    font-size: 12px;
     padding-left: 10px;
     padding-right: 10px;
 
@@ -558,18 +564,10 @@ width: 200px;
     border: 2px solid rgb(152, 169, 192);
     margin-top: 10px;
   }
-  /* .task_Lbl{
-width: 200px;
-  }
- .time_Lbl{
-  width: 200px;
- }
- .status_Lbl{
-
- }
-  .time_Lbl >{
-  width: 200px;
- }  */
+  .status_Lbl > input{
+    height: 10px;
+    width: 10px;
+   }
   
 } 
 
@@ -580,28 +578,28 @@ width: 200px;
   .forms__area{
     width: 450px;
   }}
-@media screen and (max-width:766px){
+@media screen and (max-width:768px){
   
 
   .dbdataOftodos{
    
-   
+    display: grid;
+    grid-template-columns: 1fr 1fr 60px 40px 50px 40px;
+    gap: 5px;
     font-size: 9px;
-    padding-left: 5px;
-    padding-right: 5px;
-justify-content: center;
-gap: 15px;
+    padding-left:   8px;
+    padding-right: 3px;
+
   } 
   .cardscont{
-    display: grid;
-    grid-template-columns: 106px 86px 126px 112px;
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     font-size: 9px;
     font-weight: 600;
     align-items: center;
   }
   .addtodocont{
-margin-left: 22px; 
 width: 65px; }
   .todaystdocont{
     width: 106px;
@@ -619,15 +617,7 @@ width: 65px; }
     width: 40px !important;
     
   }
-  .time_Lbl{
-    width: 120px;
-   }
-   .status_Lbl{
-width: 70px;
-   }
-   .task_Lbl{
-    width: 150px;
-      }
+
   
 } 
 @media screen and (max-width:620px){
@@ -680,19 +670,17 @@ width: 70px;
     font-size: 9px;
     padding-left: 3px;
     padding-right: 3px;
-justify-content: center;
 gap: 8px;
   } 
   .cardscont{
-    display: grid;
-    grid-template-columns: 106px 86px 126px 112px;
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     font-size: 9px;
     font-weight: 600;
     align-items: center;
   }
   .addtodocont{
-margin-left: 22px; 
 width: 65px; }
   .todaystdocont{
     width: 106px;
@@ -733,9 +721,9 @@ justify-content: center;
 gap: 8px;
   } 
   .cardscont{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr ;
-    gap: 1px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     font-size: 9px;
     font-weight: 600;
     align-items: center;
@@ -750,7 +738,6 @@ gap: 8px;
     width: 112px;
   }
   .addtodocont{
-margin-left: 22px; 
 width: 65px; }
   .todaystdocont{
     width: 106px;
@@ -798,33 +785,76 @@ width: 70px;
   padding-left: 0px !important;
 }
 }
-@media screen and (max-width:430px){
+@media screen and (max-width:470px){
 
 
   .cardscont{
-    display: grid;
-    grid-template-columns: 1fr 1fr ;
-    gap: 1px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
     font-size: 9px;
     font-weight: 600;
     align-items: center;
   }
+  .dbdataOftodos{
+   
+    display: grid;
+    grid-template-columns: 1fr 1fr 50px 35px 50px 40px;
+    gap: 6px;
+    font-size: 9px;
+    padding-left:   3px;
+    padding-right: 3px;
 
+  } 
 
- .inputdata{
-    width: 50px;
-    padding-left: 5px;
-  }
- 
-
-  .time_Lbl{
-    width: 64px;
-   }
-   .status_Lbl{
-width: 40px;
-   }
-   .task_Lbl{
-    width: 50px;
-      }
   
 } 
+@media screen and (max-width:458px){
+  .dbdataOftodos{
+   
+    display: grid;
+    grid-template-columns: 1fr 80px 60px 30px 1fr;
+    /* gap: 6px; */
+    justify-content: space-evenly;
+    font-size: 9px;
+    padding-left:   6px;
+    padding-right: 3px;
+
+  } 
+
+  .status_Lbl{
+    width: 100%;
+  }
+  .dbdataOftodos > button{
+    font-size: 8px;
+  }
+  .dbdataOftodos >label>input{
+    width: 100%;
+  }
+  .dbdataOftodos > label{
+    width: 100%;
+  }
+  .delete{
+    width: 50px !important;
+  }
+  .save{
+    width: 35px !important;
+  }
+}
+@media screen and (max-width:348px){
+  .dbdataOftodos{
+   
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr ;
+    /* gap: 6px; */
+    justify-content: space-evenly;
+    font-size: 9px;
+    padding-left:   6px;
+    padding-right: 3px;
+
+  } 
+
+  .edit{
+    width: 35px !important;
+  }
+}
