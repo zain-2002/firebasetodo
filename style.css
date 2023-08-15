@@ -571,7 +571,7 @@ width: 200px;
   
 } 
 
-@media screen and (max-width:830px){
+@media screen and (max-width:930px){
   .wrapper__area{
     width: 600px;
   }
@@ -620,29 +620,45 @@ width: 65px; }
 
   
 } 
-@media screen and (max-width:620px){
-  .wrapper__area{
-    width: 400px;
+@media screen and (max-width:930px){
+.sign-up__aside-info > img{
+margin-top: 20px;
+}
+}
+
+@media screen and (max-width:740px){
+  #formcont{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+  #wrapper_Area{
+    width: 80%;
+    margin-left: 50px;
+  }
+
   .forms__area{
-    width: 260px;
+    width: 60%;
   }
   .paratext{
     margin-bottom: 0px !important;
     font-size: 16px !important;
   }
 .aside__area{
-  width: 140px;
+  width: 40%;
 }
-.editedtextwelcome{
-  font-size: 17px !important;
-  font-weight: 700 !important;
-}
+
 #aside_signUp_Btn,#aside_signIn_Btn{
   margin: 0px;
   width: 80px !important;
   margin-left: 10px;
   margin-top: 20px !important;
+}
+#aside_signIn_Btn{
+  margin-left: 30px;
+  margin-right: 30px;
+  width: 130px !important;
 }
 .login__aside-info{
   display: flex;
@@ -766,24 +782,43 @@ width: 70px;
       }
   
 } 
-@media screen and (max-width:620px){
-  .wrapper__area{
-    width: 300px;
+@media screen and (max-width:645px){
+  .editedtextwelcome{
+    font-size: 30px !important;
   }
-  .forms__area{
-    width: 190px;
+  #aside_signIn_Btn{
+    margin-left: 25px;
+    margin-right: 18px;
+    width: 120px !important;
   }
+    #formcont{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #wrapper_Area{
+      width: 80%;
+      margin-left: 50px;
+    }
+  
+    .forms__area{
+      width: 60%;
+    }
+    .paratext{
+      margin-bottom: 0px !important;
+      font-size: 16px !important;
+    }
+  .aside__area{
+    width: 40%;
+  }
+  #signUpEmail{
+    font-size: 12px;
+  }
+  #signUpConfirmPassword{
+    font-size: 12px;
 
-.aside__area{
-  width: 110px;
-}
-.editedtextwelcome{
-  font-size: 12px !important;
-  font-weight: 700 !important;
-}
-.sign-up__aside-info{
-  padding-left: 0px !important;
-}
+  }
 }
 @media screen and (max-width:470px){
 
@@ -858,3 +893,85 @@ width: 70px;
     width: 35px !important;
   }
 }
+@media screen and (max-width:610px){
+  .editedtextwelcome{
+    font-size: 20px !important;
+    font-weight: bolder !important;
+    margin-left: 15px;
+  }
+  #aside_signIn_Btn{
+    margin-left: 50px;
+    margin-right: 18px;
+    width: 80px !important;
+  }
+  #formcont{
+    width: 100%;
+    display: flex;
+  }
+  #wrapper_Area{
+    width: 90%;
+    margin-left: 20px;
+  }
+
+  .forms__area{
+    width: 60%;
+  }
+  #aside_Area{
+    width: 40%;
+  }
+  .form__title{
+    font-size: 35px !important;
+  }
+  #signUpForm{
+    padding: 5px;
+  }
+  #signUpEmail{
+    font-size: 10px;
+  }
+  #signUpConfirmPassword{
+    font-size: 10px;
+
+  }
+}
+
+@media screen and (max-width:556px){
+.sign-up__aside-info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#aside_signIn_Btn{
+  margin-left: 10px;
+  margin-right: 18px;
+  width: 80px !important;
+}
+.editedtextwelcome{
+  margin-left: -5px;
+  /* align-self: flex-start !important; */
+}
+}
+@media screen and (max-width:419px){
+.editedtextwelcome{
+  font-size: 16px !important;
+  font-weight: bolder !important;
+}
+.form__title{
+  font-size: 30px !important;
+}
+#signUpEmail,#signUpConfirmPassword{
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+.sign-up__aside-info{
+  padding-left: 0px !important;
+}
+.editedtextwelcome{
+  margin-left: -15px;
+  /* align-self: flex-start !important; */
+}
+}
+@media screen and (max-width:321px){
+  .editedtextwelcome{
+    font-size: 14px !important;
+    font-weight: bolder !important;
+  }}
